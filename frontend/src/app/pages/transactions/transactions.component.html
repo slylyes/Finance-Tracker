@@ -1,0 +1,190 @@
+<section class="transactions">
+  <div class="page-header">
+    <div>
+      <h1>Transactions</h1>
+    </div>
+  </div>
+
+  <mat-card class="panel">
+    <div class="panel-header">
+      <h3>{{ editingId ? 'Modifier la transaction' : 'Nouvelle transaction' }}</h3>
+    </div>
+    <form class="form-grid" [formGroup]="transactionForm">
+      <mat-form-field appearance="outline">
+        <mat-label>Type</mat-label>
+        <mat-select formControlName="type">
+          <mat-option *ngFor="let type of types" [value]="type">
+            {{ type === 'INCOME' ? 'Revenu' : 'Depense' }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Montant</mat-label>
+        <input matInput type="number" formControlName="amount" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Date</mat-label>
+        <input
+          matInput
+          [matDatepicker]="txDate"
+          formControlName="date"
+          readonly
+          inputmode="none" />
+        <mat-datepicker-toggle matIconSuffix [for]="txDate"></mat-datepicker-toggle>
+        <mat-datepicker #txDate></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Categorie</mat-label>
+        <mat-select formControlName="categoryId">
+          <mat-option *ngFor="let category of categories" [value]="category.id">
+            {{ category.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="span-2">
+        <mat-label>Description</mat-label>
+        <input matInput formControlName="description" />
+      </mat-form-field>
+    </form>
+    <div class="form-actions">
+      <button mat-raised-button color="primary" type="button" (click)="submitForm()">
+        {{ editingId ? 'Enregistrer' : 'Ajouter' }}
+      </button>
+      <button *ngIf="editingId" mat-stroked-button type="button" (click)="cancelEdit()">
+        Annuler
+      </button>
+    </div>
+  </mat-card>
+
+  <mat-card class="panel">
+    <div class="panel-header">
+      <h3>Filtres rapides</h3>
+    </div>
+    <form class="filter-grid" [formGroup]="filterForm">
+      <mat-form-field appearance="outline">
+        <mat-label>Debut</mat-label>
+        <input
+          matInput
+          [matDatepicker]="startPicker"
+          formControlName="startDate"
+          readonly
+          inputmode="none" />
+        <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
+        <mat-datepicker #startPicker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Fin</mat-label>
+        <input
+          matInput
+          [matDatepicker]="endPicker"
+          formControlName="endDate"
+          readonly
+          inputmode="none" />
+        <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
+        <mat-datepicker #endPicker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Min</mat-label>
+        <input matInput type="number" formControlName="minAmount" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Max</mat-label>
+        <input matInput type="number" formControlName="maxAmount" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Categorie</mat-label>
+        <mat-select formControlName="categoryId">
+          <mat-option [value]="null">Toutes</mat-option>
+          <mat-option *ngFor="let category of categories" [value]="category.id">
+            {{ category.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Type</mat-label>
+        <mat-select formControlName="type">
+          <mat-option [value]="null">Tous</mat-option>
+          <mat-option *ngFor="let type of types" [value]="type">
+            {{ type === 'INCOME' ? 'Revenu' : 'Depense' }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="span-2">
+        <mat-label>Recherche</mat-label>
+        <input matInput formControlName="query" placeholder="Description..." />
+      </mat-form-field>
+    </form>
+    <div class="form-actions">
+      <button mat-raised-button color="primary" type="button" (click)="applyFilters()">
+        Appliquer
+      </button>
+      <button mat-stroked-button type="button" (click)="resetFilters()">
+        Reinitialiser
+      </button>
+    </div>
+  </mat-card>
+
+  <mat-card class="panel">
+    <div class="panel-header">
+      <h3>Historique</h3>
+    </div>
+    <div class="table-wrapper">
+      <table mat-table [dataSource]="transactions" class="mat-elevation-z0">
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef>Date</th>
+          <td mat-cell *matCellDef="let transaction">{{ transaction.date }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef>Type</th>
+          <td mat-cell *matCellDef="let transaction">
+            {{ transaction.type === 'INCOME' ? 'Revenu' : 'Depense' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="category">
+          <th mat-header-cell *matHeaderCellDef>Categorie</th>
+          <td mat-cell *matCellDef="let transaction">{{ transaction.categoryName }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="amount">
+          <th mat-header-cell *matHeaderCellDef>Montant</th>
+          <td mat-cell *matCellDef="let transaction">
+            {{ transaction.amount | currency:'EUR':'symbol':'1.2-2':'fr-FR' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef>Description</th>
+          <td mat-cell *matCellDef="let transaction">
+            {{ transaction.description || '-' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let transaction">
+            <button mat-button color="primary" (click)="editTransaction(transaction)">Modifier</button>
+            <button mat-button color="warn" (click)="deleteTransaction(transaction)">Supprimer</button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+
+      <p class="empty" *ngIf="!transactions.length && !isLoading">Aucune transaction.</p>
+      <p class="loading" *ngIf="isLoading">Chargement...</p>
+    </div>
+  </mat-card>
+</section>

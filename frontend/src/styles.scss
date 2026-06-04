@@ -1,0 +1,148 @@
+@use '@angular/material' as mat;
+
+$primary: mat.define-palette(mat.$blue-grey-palette, 800, 500, 900);
+$accent: mat.define-palette(mat.$amber-palette, 600, 300, 800);
+$warn: mat.define-palette(mat.$deep-orange-palette, 600);
+
+$theme: mat.define-light-theme((
+  color: (
+    primary: $primary,
+    accent: $accent,
+    warn: $warn
+  ),
+  typography: mat.define-typography-config(
+    $font-family: 'Manrope, "Noto Sans", sans-serif'
+  ),
+  density: 0
+));
+
+@include mat.core();
+@include mat.all-component-themes($theme);
+
+:root {
+  --app-background: #f5f1ea;
+  --app-background-soft: #eef5f1;
+  --card-surface: #ffffff;
+  --card-border: rgba(13, 40, 50, 0.08);
+  --panel-surface: rgba(255, 255, 255, 0.92);
+  --panel-border: rgba(15, 31, 37, 0.12);
+  --muted-text: #5a676b;
+  --ink: #0f1f25;
+  --ink-soft: #1b2a30;
+  --accent-blue: #1b4965;
+  --accent-green: #2a9d8f;
+  --accent-red: #e76f51;
+  --accent-gold: #f4a261;
+  --light-text: #f8f5f1;
+  --track-color: rgba(27, 73, 101, 0.14);
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --soft-shadow: 0 12px 26px rgba(15, 35, 40, 0.08);
+  --shadow-card: 0 16px 32px rgba(15, 35, 40, 0.12);
+  --shadow-strong: 0 22px 44px rgba(15, 35, 40, 0.18);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Manrope', 'Noto Sans', sans-serif;
+  color: var(--ink);
+  line-height: 1.6;
+  background:
+    radial-gradient(circle at top left, rgba(42, 157, 143, 0.16), transparent 55%),
+    radial-gradient(circle at 70% 10%, rgba(231, 111, 81, 0.12), transparent 45%),
+    linear-gradient(120deg, var(--app-background), var(--app-background-soft));
+  background-attachment: fixed;
+}
+
+h1,
+h2,
+h3 {
+  color: var(--ink-soft);
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  font-size: clamp(1.8rem, 1.4rem + 1.3vw, 2.4rem);
+}
+
+p {
+  color: var(--muted-text);
+}
+
+mat-card {
+  border-radius: var(--radius-lg);
+}
+
+a {
+  text-decoration: none;
+}
+
+.mat-mdc-raised-button,
+.mat-mdc-stroked-button,
+.mat-mdc-outlined-button,
+.mat-mdc-button {
+  border-radius: 999px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.mat-mdc-raised-button {
+  box-shadow: 0 10px 20px rgba(27, 73, 101, 0.2);
+}
+
+.mat-mdc-stroked-button,
+.mat-mdc-outlined-button {
+  border-color: color-mix(in srgb, var(--accent-blue) 45%, transparent);
+}
+
+.mat-mdc-table {
+  border-collapse: separate;
+  border-spacing: 0 0.6rem;
+}
+
+.mat-mdc-header-cell {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted-text);
+}
+
+.mat-mdc-cell {
+  padding: 0.75rem 0.85rem;
+}
+
+.mat-mdc-row {
+  background: rgba(255, 255, 255, 0.78);
+  border-radius: 14px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mat-mdc-row:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--soft-shadow);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.snackbar-error {
+  background: #b5412e;
+  color: #ffffff;
+}

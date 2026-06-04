@@ -1,0 +1,139 @@
+<section class="dashboard">
+  <div class="dashboard-header">
+    <div>
+      <h1>Tableau de bord</h1>
+    </div>
+    <form class="range-form" [formGroup]="rangeForm">
+      <mat-form-field appearance="outline">
+        <mat-label>Debut</mat-label>
+        <input
+          matInput
+          [matDatepicker]="startPicker"
+          formControlName="startDate"
+          readonly
+          inputmode="none" />
+        <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
+        <mat-datepicker #startPicker></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Fin</mat-label>
+        <input
+          matInput
+          [matDatepicker]="endPicker"
+          formControlName="endDate"
+          readonly
+          inputmode="none" />
+        <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
+        <mat-datepicker #endPicker></mat-datepicker>
+      </mat-form-field>
+      <button mat-raised-button color="primary" type="button" (click)="load()">
+        Actualiser
+      </button>
+    </form>
+  </div>
+
+  <div class="summary-grid" *ngIf="overview as data">
+    <mat-card class="summary-card income">
+      <span class="label">Revenus</span>
+      <span class="value">{{ data.totalIncome | currency:'EUR':'symbol':'1.2-2':'fr-FR' }}</span>
+    </mat-card>
+    <mat-card class="summary-card expense">
+      <span class="label">Depenses</span>
+      <span class="value">{{ data.totalExpense | currency:'EUR':'symbol':'1.2-2':'fr-FR' }}</span>
+    </mat-card>
+    <mat-card class="summary-card savings">
+      <span class="label">Epargne nette</span>
+      <span class="value">{{ data.netSavings | currency:'EUR':'symbol':'1.2-2':'fr-FR' }}</span>
+    </mat-card>
+  </div>
+
+  <div class="panel-grid">
+    <mat-card class="panel">
+      <h3>Depenses mensuelles</h3>
+      <div
+        class="line-chart"
+        #monthlyChart
+        *ngIf="monthlyTotals.length; else emptyMonthly"
+        (mousemove)="updateTooltipPosition($event)"
+        (mouseleave)="clearTooltip()">
+        <svg viewBox="0 0 600 220" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="monthlyGradient" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stop-color="#2a9d8f" stop-opacity="0.45" />
+              <stop offset="100%" stop-color="#2a9d8f" stop-opacity="0" />
+            </linearGradient>
+          </defs>
+          <polyline class="line" [attr.points]="monthlyLinePoints"></polyline>
+          <polyline
+            class="area"
+            [attr.points]="monthlyLinePoints + ' 572,192 28,192'">
+          </polyline>
+          <circle
+            *ngFor="let dot of monthlyLineDots"
+            class="dot"
+            [attr.cx]="dot.x"
+            [attr.cy]="dot.y"
+            r="4"
+            (mouseenter)="showTooltip(dot, $event)"
+            (mouseleave)="clearTooltip()">
+          </circle>
+        </svg>
+        <div
+          class="chart-tooltip"
+          *ngIf="tooltip"
+          [style.left.px]="tooltip.x"
+          [style.top.px]="tooltip.y">
+          <div class="tooltip-label">{{ tooltip.label }}</div>
+          <div class="tooltip-value">
+            {{ tooltip.value | currency:'EUR':'symbol':'1.0-0':'fr-FR' }}
+          </div>
+        </div>
+        <div class="chart-labels">
+          <span *ngFor="let label of monthlyLabels">{{ label }}</span>
+        </div>
+      </div>
+      <ng-template #emptyMonthly>
+        <p class="empty">Pas de donnees sur cette periode.</p>
+      </ng-template>
+    </mat-card>
+
+    <mat-card class="panel">
+      <h3>Depenses par categorie</h3>
+      <div class="category-list" *ngIf="categoryBars.length; else emptyCategory">
+        <div class="category-row" *ngFor="let item of categoryBars">
+          <div class="category-info">
+            <span>{{ item.categoryName }}</span>
+            <strong>{{ item.totalExpense | currency:'EUR':'symbol':'1.0-0':'fr-FR' }}</strong>
+          </div>
+          <mat-progress-bar mode="determinate" [value]="item.percent"></mat-progress-bar>
+        </div>
+      </div>
+      <ng-template #emptyCategory>
+        <p class="empty">Aucune depense par categorie.</p>
+      </ng-template>
+    </mat-card>
+  </div>
+
+  <mat-card class="panel goals">
+    <div class="goals-header">
+      <h3>Objectifs d'epargne</h3>
+    </div>
+    <div class="goal-list" *ngIf="goals.length; else emptyGoals">
+      <div class="goal-row" *ngFor="let goal of goals">
+        <div class="goal-info">
+          <h4>{{ goal.name }}</h4>
+          <p>
+            {{ goal.currentAmount | currency:'EUR':'symbol':'1.2-2':'fr-FR' }} /
+            {{ goal.targetAmount | currency:'EUR':'symbol':'1.2-2':'fr-FR' }}
+          </p>
+        </div>
+        <mat-progress-bar mode="determinate" [value]="goal.progressPercent"></mat-progress-bar>
+      </div>
+    </div>
+    <ng-template #emptyGoals>
+      <p class="empty">Ajoute un objectif pour voir la progression.</p>
+    </ng-template>
+  </mat-card>
+
+  <p class="loading" *ngIf="isLoading">Chargement des indicateurs...</p>
+</section>

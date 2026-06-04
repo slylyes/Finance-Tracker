@@ -1,0 +1,87 @@
+<section class="goals">
+  <div class="page-header">
+    <div>
+      <h1>Objectifs</h1>
+      <p>Definis des objectifs d'epargne et suis la progression.</p>
+    </div>
+  </div>
+
+  <mat-card class="panel">
+    <div class="panel-header">
+      <h3>{{ editingId ? 'Modifier un objectif' : 'Nouvel objectif' }}</h3>
+    </div>
+    <form class="form-grid" [formGroup]="goalForm">
+      <mat-form-field appearance="outline">
+        <mat-label>Nom</mat-label>
+        <input matInput formControlName="name" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Montant cible</mat-label>
+        <input matInput type="number" formControlName="targetAmount" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Debut</mat-label>
+        <input
+          matInput
+          [matDatepicker]="startPicker"
+          formControlName="startDate"
+          readonly
+          inputmode="none" />
+        <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
+        <mat-datepicker #startPicker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Fin (optionnel)</mat-label>
+        <input
+          matInput
+          [matDatepicker]="endPicker"
+          formControlName="endDate"
+          readonly
+          inputmode="none" />
+        <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
+        <mat-datepicker #endPicker></mat-datepicker>
+      </mat-form-field>
+    </form>
+    <div class="form-actions">
+      <button mat-raised-button color="primary" type="button" (click)="submitForm()">
+        {{ editingId ? 'Enregistrer' : 'Ajouter' }}
+      </button>
+      <button *ngIf="editingId" mat-stroked-button type="button" (click)="cancelEdit()">
+        Annuler
+      </button>
+    </div>
+  </mat-card>
+
+  <mat-card class="panel">
+    <div class="panel-header">
+      <h3>Progression</h3>
+    </div>
+    <div class="goal-list" *ngIf="goals.length; else emptyGoals">
+      <div class="goal-row" *ngFor="let goal of goals">
+        <div class="goal-info">
+          <div>
+            <h4>{{ goal.name }}</h4>
+            <p>
+              {{ goal.currentAmount | currency:'EUR':'symbol':'1.2-2':'fr-FR' }} /
+              {{ goal.targetAmount | currency:'EUR':'symbol':'1.2-2':'fr-FR' }}
+            </p>
+          </div>
+          <div class="goal-actions">
+            <button mat-stroked-button color="primary" (click)="editGoal(goal)">Modifier</button>
+            <button mat-stroked-button color="warn" (click)="deleteGoal(goal)">Supprimer</button>
+          </div>
+        </div>
+        <mat-progress-bar
+          mode="determinate"
+          [value]="goal.progressPercent < 0 ? 0 : (goal.progressPercent > 100 ? 100 : goal.progressPercent)">
+        </mat-progress-bar>
+      </div>
+    </div>
+    <ng-template #emptyGoals>
+      <p class="empty">Aucun objectif pour le moment.</p>
+    </ng-template>
+  </mat-card>
+</section>

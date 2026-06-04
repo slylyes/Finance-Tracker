@@ -1,0 +1,52 @@
+<section class="categories">
+  <div class="page-header">
+    <div>
+      <h1>Categories</h1>
+    </div>
+  </div>
+
+  <mat-card class="panel">
+    <div class="panel-header">
+      <h3>{{ editingId ? 'Modifier la categorie' : 'Nouvelle categorie' }}</h3>
+    </div>
+    <form class="form-row" [formGroup]="categoryForm">
+      <mat-form-field appearance="outline">
+        <mat-label>Nom</mat-label>
+        <input matInput formControlName="name" />
+      </mat-form-field>
+      <div class="form-actions">
+        <button mat-raised-button color="primary" type="button" (click)="submitForm()">
+          {{ editingId ? 'Enregistrer' : 'Ajouter' }}
+        </button>
+        <button *ngIf="editingId" mat-stroked-button type="button" (click)="cancelEdit()">
+          Annuler
+        </button>
+      </div>
+    </form>
+  </mat-card>
+
+  <mat-card class="panel">
+    <div class="panel-header">
+      <h3>Liste</h3>
+    </div>
+    <table mat-table [dataSource]="categories" class="mat-elevation-z0">
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Nom</th>
+        <td mat-cell *matCellDef="let category">{{ category.name }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let category">
+          <button mat-button color="primary" (click)="editCategory(category)">Modifier</button>
+          <button mat-button color="warn" (click)="deleteCategory(category)">Supprimer</button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+    <p class="empty" *ngIf="!categories.length">Aucune categorie.</p>
+  </mat-card>
+</section>
